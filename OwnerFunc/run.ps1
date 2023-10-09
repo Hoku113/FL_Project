@@ -28,10 +28,14 @@ $port2 = New-AzContainerInstancePortObject -Port 8001
 # Write-Output $port2
 
 $container = New-AzContainerInstanceObject -Name $container_name -Image nginx -Port @($port1, $port2)
-New-AzContainerGroup -ResourceGroupName Federated_Learning_tutorial -Name "director-resource-creator" -Location japaneast -Container $container -OSType 'Linux' -RestartPolicy "OnFailure" -IPAddressType 'Public'
+New-AzContainerGroup -ResourceGroupName $env:ACI_RESOURCE_GOURP_NAME -Name $env:DIRECTOR_GROUP -Location japaneast `
+-Container $container -Image "mcr.microsoft.com/azure-cli" -OSType 'Linux' -RestartPolicy "OnFailure" -IPAddressType 'Public' `
+# -Command "/bin/bash -c "" cd && az login --service-principal --username $env:AZURE_USER --password $env:AZURE_PASSWORD --teanant $env:AZURE_TENANT && sudo apt update && pip install -U pip && pip install openfl `
+# && git clone https://github.com/hiouchiy/Federated_Learning_First_Step_Tutorial.git && cd Federated_Learning_First_Step_Tutorial/director && sed -i -e '3 s/localhost/$privateIP/g' director_config.yaml && fx director start --disable-tls -c director_config.yaml
+# """
 
 if ($container_name) {
-    $body = "Hello, $container_name. This HTTP triggered function executed successfully."
+    $body = "Success! $container_name is created!"
 }
 
 # Associate values to output bindings by calling 'Push-OutputBinding'.
